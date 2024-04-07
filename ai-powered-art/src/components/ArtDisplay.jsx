@@ -10,7 +10,9 @@ const ArtDisplay = ({ imageUrl }) => {
           alt="Generated Artwork"
         />
       ) : (
-        <p className="text-center text-gray-500">Waiting for your artwork...</p>
+        <p className="text-center text-gray-500">
+          Please hold on for your art work
+        </p>
       )}
     </div>
   );

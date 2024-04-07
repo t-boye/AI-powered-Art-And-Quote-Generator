@@ -1,12 +1,13 @@
+require("dotenv").config();
 const express = require("express");
-const openai = require("openai"); // Import OpenAI library
+const openai = require("openai");
 const cors = require("cors");
 
 const app = express();
-app.use(cors()); // Apply CORS middleware to all routes
+app.use(cors());
 app.use(express.json()); // Parse JSON bodies
 
-const port = process.env.PORT || 3000; // Use environment variable for port (optional)
+const port = process.env.PORT || 3000;
 
 // Replace with your OpenAI API key (securely stored)
 openai.apiKey = process.env.OPENAI_API_KEY;
