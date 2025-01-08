@@ -1,74 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
 const ImageGenerator = () => {
-  const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleGetRandomPhoto = async () => {
     setIsLoading(true);
-    setError(null); // Clear any previous errors
+    setError(null);
 
     try {
-      const response = await fetch("http://localhost:3000/generate-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
+      // Replace with your actual Unsplash Access Key directly
+      const accessKey = "YOUR_ACTUAL_UNSPLASH_ACCESS_KEY"; 
+
+      const response = await fetch(
+        `https://api.unsplash.com/photos/random?client_id=${accessKey}`
+      );
 
       if (!response.ok) {
-        throw new Error(
-          `Image generation failed with status ${response.status}`
-        );
+        throw new Error(`Failed to fetch random photo with status ${response.status}`);
       }
 
       const data = await response.json();
 
-      if (data.success) {
-        setImageUrl(data.imageUrl);
+      if (data) {
+        setImageUrl(data.urls.regular);
       } else {
-        throw new Error(data.error || "Failed to generate image");
+        throw new Error("Failed to retrieve random photo");
       }
     } catch (error) {
-      console.error("Error generating image:", error);
+      console.error("Error fetching random photo:", error);
       setError(
-        "An error occurred while generating the image. Please try again."
+        "An error occurred while fetching a random photo. Please try again."
       );
     } finally {
       setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    handleGetRandomPhoto(); 
+  }, []); 
+
   return (
     <div className="bg-gray-100 p-4 rounded-md mb-4">
-      <h2 className="text-xl font-bold mb-2">Generate an Image</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col">
-        <input
-          type="text"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter your image prompt"
-          className="border border-gray-300 rounded-md p-2 mb-2"
-        />
-        <button
-          type="submit"
-          disabled={!prompt}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700"
-        >
-          {isLoading ? "Generating..." : "Generate Image"}
-        </button>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-      </form>
+      <h2 className="text-xl font-bold mb-2">Get a Random Photo</h2>
+      <button
+        type="button"
+        disabled={isLoading}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700"
+        onClick={handleGetRandomPhoto}
+      >
+        {isLoading ? "Loading..." : "Get Random Photo"}
+      </button>
       {imageUrl && (
-        <img
-          src={imageUrl}
-          alt="Generated Image"
-          className="w-full rounded-md"
-        />
+        <img src={imageUrl} alt="Random Photo" className="w-full rounded-md mt-4" />
       )}
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
     </div>
   );
 };
